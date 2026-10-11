@@ -1,0 +1,119 @@
+﻿@model List<Aplication.DTos.EstudianteDto>
+@{
+    ViewData["Title"] = "Registro Masivo de Estudiantes";
+}
+
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading text-white" style="font-size: 2.8rem;">Matrícula Masiva<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Ingresa múltiples alumnos en una sola operación</p>
+        <div class="alert alert-info d-inline-block rounded-pill px-4 py-2 mt-2" style="background-color: rgba(0,82,255,0.12); border: 1px solid rgba(0,82,255,0.3); color: #cfe0ff;">
+            <i class="bi bi-info-circle me-2"></i>Se les generará automáticamente un correo (<code>carnet@est.uni.edu.ni</code>) y una contraseña temporal para que puedan iniciar sesión.
+        </div>
+    </div>
+
+    <div class="bto-form-card">
+        <form asp-action="RegistroMasivo" method="post">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger rounded-3 p-3 mb-4">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-0"></div>
+                </div>
+            }
+
+            <div class="table-custom mb-4">
+                <table class="table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Carnet *</th>
+                            <th style="width: 25%;">Nombres *</th>
+                            <th style="width: 25%;">Apellidos *</th>
+                            <th style="width: 25%;">Carrera *</th>
+                            <th class="text-center" style="width: 5%;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="filasContenedor">
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr class="fila-estudiante">
+                                <td>
+                                    <input name="[@i].Carnet" value="@Model[i].Carnet" class="form-control" placeholder="Ej: 2026-0001U" />
+                                </td>
+                                <td>
+                                    <input name="[@i].Nombres" value="@Model[i].Nombres" class="form-control" placeholder="Ej: Juan José" />
+                                </td>
+                                <td>
+                                    <input name="[@i].Apellidos" value="@Model[i].Apellidos" class="form-control" placeholder="Ej: Pérez López" />
+                                </td>
+                                <td>
+                                    <select name="[@i].IdCarrera" asp-items="ViewBag.ListaCarreras" class="form-select">
+                                        <option value="">-- Seleccione --</option>
+                                    </select>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-circle btn-eliminar-fila">&times;</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-3">
+                <button type="button" id="btnAgregarFila" class="btn btn-outline-light rounded-pill px-4 fw-semibold">
+                    + Agregar Estudiante
+                </button>
+                <div>
+                    <a asp-action="ListarEstudiantes" class="btn btn-link text-muted text-decoration-none me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-bto-primary btn-lg px-5">Guardar Todos</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const contenedor = document.getElementById("filasContenedor");
+            const btnAgregar = document.getElementById("btnAgregarFila");
+
+            function reindexarFilas() {
+                const filas = contenedor.querySelectorAll(".fila-estudiante");
+                filas.forEach((fila, index) => {
+                    fila.querySelectorAll("input, select").forEach(campo => {
+                        const nameAttr = campo.getAttribute("name");
+                        if (nameAttr) {
+                            const newName = nameAttr.replace(/\[\d+\]/, `[${index}]`);
+                            campo.setAttribute("name", newName);
+                        }
+                    });
+                });
+            }
+
+            btnAgregar.addEventListener("click", function() {
+                const primeraFila = contenedor.querySelector(".fila-estudiante");
+                const nuevaFila = primeraFila.cloneNode(true);
+
+                nuevaFila.querySelectorAll("input").forEach(input => input.value = "");
+                nuevaFila.querySelectorAll("select").forEach(select => select.selectedIndex = 0);
+
+                contenedor.appendChild(nuevaFila);
+                reindexarFilas();
+            });
+
+            contenedor.addEventListener("click", function(e) {
+                if (e.target.classList.contains("btn-eliminar-fila")) {
+                    const filas = contenedor.querySelectorAll(".fila-estudiante");
+                    if (filas.length > 1) {
+                        e.target.closest("tr").remove();
+                        reindexarFilas();
+                    } else {
+                        alert("Debe mantener al menos una fila.");
+                    }
+                }
+            });
+        });
+    </script>
+}

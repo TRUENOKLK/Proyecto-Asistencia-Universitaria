@@ -1,0 +1,40 @@
+@model Aplication.DTos.CarreraDto
+@{
+    ViewData["Title"] = "Editar Carrera";
+}
+
+<div class="container py-5 uni-animate-in" style="max-width: 650px;">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading" style="font-size: 2.4rem;">Editar Carrera<span class="text-accent">.</span></h1>
+    </div>
+
+    <div class="bto-form-card">
+        <form asp-action="EditarCarrera" method="post">
+            <input type="hidden" asp-for="IdCarrera" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-4">
+                <label asp-for="NombreCarrera" class="form-label">Nombre de la Carrera</label>
+                <input asp-for="NombreCarrera" class="form-control" />
+                <span asp-validation-for="NombreCarrera" class="text-danger"></span>
+            </div>
+
+            <div class="mb-5">
+                <label asp-for="IdFacultad" class="form-label">Facultad a la que pertenece</label>
+                <select asp-for="IdFacultad" asp-items="ViewBag.ListaFacultades" class="form-select">
+                    <option value="">-- Selecciona una Facultad --</option>
+                </select>
+                <span asp-validation-for="IdFacultad" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid gap-3">
+                <button type="submit" class="btn btn-bto-primary btn-lg">Guardar Cambios</button>
+                <a asp-action="ListarCarreras" class="btn btn-link text-muted text-decoration-none fw-bold text-center">Cancelar y volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

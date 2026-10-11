@@ -1,0 +1,133 @@
+@model IEnumerable<Aplication.DTos.EstudianteDto>
+@{
+    ViewData["Title"] = "Listado de Estudiantes";
+}
+
+<div class="container py-4 uni-animate-in">
+    <div class="text-center mb-4">
+        <h1 class="bto-heading">Comunidad Estudiantil<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Directorio de alumnos matriculados en la universidad</p>
+
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a asp-action="NuevoEstudiante" class="btn btn-bto-primary">
+                <i class="bi bi-person-plus me-2"></i> Nuevo Estudiante
+            </a>
+            <a asp-action="RegistroMasivo" class="btn btn-outline-light rounded-pill px-4">
+                <i class="bi bi-stack me-2"></i> Carga Masiva
+            </a>
+        </div>
+    </div>
+
+    <div class="uni-toolbar mb-3">
+        <div class="uni-search">
+            <i class="bi bi-search"></i>
+            <input type="text" id="buscador" class="form-control" placeholder="Buscar por nombre, carnet, carrera o correo..." />
+        </div>
+        <span class="text-muted small" id="contadorResultados"></span>
+    </div>
+
+    <div class="table-custom">
+        <table class="table mb-0 align-middle" id="tablaEstudiantes">
+            <thead>
+                <tr>
+                    <th>Carnet</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Carrera</th>
+                    <th>Correo Electrónico</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-accent fw-bold">@item.Carnet</td>
+                            <td>@item.Nombres</td>
+                            <td>@item.Apellidos</td>
+                            <td>
+                                <span class="badge rounded-pill uni-badge-primary px-3 py-2">
+                                    <i class="bi bi-journal-bookmark me-1"></i> @item.NombreCarrera
+                                </span>
+                            </td>
+                            <td>@(string.IsNullOrEmpty(item.Email) ? "Sin registrar" : item.Email)</td>
+                            <td class="text-center">
+                                @if (item.Activo)
+                                {
+                                    <span class="badge rounded-pill bg-success px-3 py-2">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill bg-secondary px-3 py-2">Inactivo</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="EditarEstudiante" asp-route-id="@item.IdEstudiante" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="CambiarEstado" asp-route-id="@item.IdEstudiante" asp-route-activo="@(!item.Activo)" method="post" class="d-inline"
+                                      onsubmit="return confirm('@(item.Activo ? "¿Desactivar a este estudiante? No podrá iniciar sesión." : "¿Reactivar a este estudiante?")');">
+                                    @if (item.Activo)
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1" title="Desactivar">
+                                            <i class="bi bi-person-dash"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 ms-1" title="Activar">
+                                            <i class="bi bi-person-check"></i>
+                                        </button>
+                                    }
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="bi bi-people display-6 d-block mb-2 opacity-50"></i>
+                            <h5 class="fw-light">No hay estudiantes registrados actualmente.</h5>
+                            <p class="small mb-0">Usa los botones superiores para matricular alumnos.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div id="sinResultados" class="text-center py-5 text-muted d-none">
+        <i class="bi bi-search display-6 d-block mb-2 opacity-50"></i>
+        No se encontraron estudiantes que coincidan con tu búsqueda.
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const input = document.getElementById('buscador');
+            const filas = Array.from(document.querySelectorAll('#tablaEstudiantes tbody tr'));
+            const contador = document.getElementById('contadorResultados');
+            const sinResultados = document.getElementById('sinResultados');
+            const total = filas.length;
+
+            function filtrar() {
+                const termino = input.value.trim().toLowerCase();
+                let visibles = 0;
+                filas.forEach(fila => {
+                    const coincide = fila.textContent.toLowerCase().includes(termino);
+                    fila.style.display = coincide ? '' : 'none';
+                    if (coincide) visibles++;
+                });
+                contador.textContent = termino ? `${visibles} de ${total} estudiantes` : '';
+                sinResultados.classList.toggle('d-none', !(termino && visibles === 0));
+            }
+
+            if (input && total > 0) input.addEventListener('input', filtrar);
+        })();
+    </script>
+}

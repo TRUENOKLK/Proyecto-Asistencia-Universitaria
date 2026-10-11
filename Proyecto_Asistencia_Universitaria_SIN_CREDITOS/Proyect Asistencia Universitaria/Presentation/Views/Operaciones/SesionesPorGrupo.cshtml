@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Aplication.DTos.SesionDto>
+@{
+    ViewData["Title"] = "Sesiones del Grupo";
+    int idGrupo = ViewBag.IdGrupo;
+}
+
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading text-white" style="font-size: 2.8rem;">Sesiones de Clase<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Crea sesiones, toma asistencia y revisa el reporte del grupo</p>
+        <a asp-action="ReporteGrupo" asp-route-idGrupo="@idGrupo" class="btn btn-outline-light rounded-pill px-4 mt-2">
+            <i class="bi bi-bar-chart-line me-2"></i>Ver Reporte de Asistencia del Grupo
+        </a>
+        <a asp-controller="Grupos" asp-action="ListarGrupos" class="btn btn-link text-muted text-decoration-none mt-2">
+            <i class="bi bi-arrow-left me-1"></i>Volver a Grupos
+        </a>
+    </div>
+
+
+
+
+    <div class="row justify-content-center g-4">
+       
+        <div class="col-lg-4">
+            <div class="bto-form-card">
+                <h5 class="text-accent fw-bold mb-4">Nueva Sesión</h5>
+                <form asp-action="CrearSesion" method="post">
+                    <input type="hidden" name="IdGrupo" value="@idGrupo" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de la Sesión</label>
+                        <input name="FechaSesion" type="date" class="form-control" required
+                               min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <div class="form-text text-muted">No se permiten fechas anteriores al día de hoy.</div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Tema Impartido</label>
+                        <input name="Tema" type="text" class="form-control" placeholder="Ej: Introducción a Bases de Datos" required />
+                    </div>
+                    <button type="submit" class="btn btn-bto-primary w-100">
+                        <i class="bi bi-plus-circle me-2"></i>Crear Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+
+       
+        <div class="col-lg-7">
+            <div class="table-custom">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tema</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var sesion in Model.OrderByDescending(s => s.FechaSesion))
+                            {
+                                <tr>
+                                    <td class="text-white">@sesion.FechaSesion.ToString("dd/MM/yyyy")</td>
+                                    <td>@sesion.Tema</td>
+                                    <td class="text-center">
+                                        <a asp-action="TomarAsistencia" asp-route-idGrupo="@idGrupo" asp-route-idSesion="@sesion.IdSesion"
+                                           class="btn btn-sm btn-bto-primary rounded-pill px-3">
+                                            <i class="bi bi-clipboard2-check me-1"></i>Tomar Asistencia
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center py-5 text-muted">
+                                    Aún no hay sesiones registradas para este grupo. Crea la primera con el formulario de la izquierda.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,122 @@
+@model IEnumerable<Aplication.DTos.ProfesorDto>
+@{
+    ViewData["Title"] = "Listado de Profesores";
+}
+
+<div class="container py-4 uni-animate-in">
+    <div class="text-center mb-4">
+        <h1 class="bto-heading">Plantilla Docente<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Gestión de profesores de la universidad</p>
+        <a asp-action="NuevoProfesor" class="btn btn-bto-primary mt-3">
+            <i class="bi bi-person-video3 me-2"></i>Registrar Nuevo Profesor
+        </a>
+    </div>
+
+    <div class="uni-toolbar mb-3">
+        <div class="uni-search">
+            <i class="bi bi-search"></i>
+            <input type="text" id="buscador" class="form-control" placeholder="Buscar por nombre, teléfono o correo..." />
+        </div>
+        <span class="text-muted small" id="contadorResultados"></span>
+    </div>
+
+    <div class="table-custom">
+        <table class="table mb-0 align-middle" id="tablaProfesores">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Teléfono</th>
+                    <th>Correo institucional</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-accent">#@item.IdProfesor</td>
+                            <td class="fw-semibold">@item.Nombres</td>
+                            <td>@item.Apellidos</td>
+                            <td>@(string.IsNullOrEmpty(item.Telefono) ? "N/A" : item.Telefono)</td>
+                            <td>@item.Email</td>
+                            <td class="text-center">
+                                @if (item.Activo)
+                                {
+                                    <span class="badge rounded-pill bg-success px-3 py-2">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill bg-secondary px-3 py-2">Inactivo</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="EditarProfesor" asp-route-id="@item.IdProfesor" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="CambiarEstado" asp-route-id="@item.IdProfesor" asp-route-activo="@(!item.Activo)" method="post" class="d-inline"
+                                      onsubmit="return confirm('@(item.Activo ? "¿Desactivar a este profesor? No podrá iniciar sesión." : "¿Reactivar a este profesor?")');">
+                                    @if (item.Activo)
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1" title="Desactivar">
+                                            <i class="bi bi-person-dash"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 ms-1" title="Activar">
+                                            <i class="bi bi-person-check"></i>
+                                        </button>
+                                    }
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="bi bi-person-video3 display-6 d-block mb-2 opacity-50"></i>
+                            <h5 class="fw-light">No hay profesores registrados actualmente.</h5>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div id="sinResultados" class="text-center py-5 text-muted d-none">
+        <i class="bi bi-search display-6 d-block mb-2 opacity-50"></i>
+        No se encontraron profesores que coincidan con tu búsqueda.
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const input = document.getElementById('buscador');
+            const filas = Array.from(document.querySelectorAll('#tablaProfesores tbody tr'));
+            const contador = document.getElementById('contadorResultados');
+            const sinResultados = document.getElementById('sinResultados');
+            const total = filas.length;
+
+            function filtrar() {
+                const termino = input.value.trim().toLowerCase();
+                let visibles = 0;
+                filas.forEach(fila => {
+                    const coincide = fila.textContent.toLowerCase().includes(termino);
+                    fila.style.display = coincide ? '' : 'none';
+                    if (coincide) visibles++;
+                });
+                contador.textContent = termino ? `${visibles} de ${total} profesores` : '';
+                sinResultados.classList.toggle('d-none', !(termino && visibles === 0));
+            }
+
+            if (input && total > 0) input.addEventListener('input', filtrar);
+        })();
+    </script>
+}

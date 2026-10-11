@@ -1,0 +1,87 @@
+@model Aplication.DTos.GrupoDto
+@{
+    ViewData["Title"] = "Editar Grupo";
+}
+
+<div class="container uni-animate-in" style="max-width: 650px; margin-bottom: 4rem;">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading" style="font-size: 2.3rem;">Editar Grupo<span class="text-accent">.</span></h1>
+    </div>
+
+    <div class="bto-form-card">
+        <form asp-action="EditarGrupo" method="post">
+            <input type="hidden" asp-for="IdGrupo" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-4">
+                <label asp-for="NombreGrupo" class="form-label">Nombre del Grupo</label>
+                <input asp-for="NombreGrupo" class="form-control" placeholder="Ej: 3M1-IS" />
+                <span asp-validation-for="NombreGrupo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="IdAsignatura" class="form-label">Materia a impartir</label>
+                <select asp-for="IdAsignatura" asp-items="@ViewBag.ListaAsignaturas" class="form-select">
+                    <option value="">-- Seleccione una Asignatura --</option>
+                </select>
+                <span asp-validation-for="IdAsignatura" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="IdProfesor" class="form-label">Docente Asignado</label>
+                <select asp-for="IdProfesor" asp-items="@ViewBag.ListaProfesores" class="form-select">
+                    <option value="">-- Seleccione un Docente --</option>
+                </select>
+                <span asp-validation-for="IdProfesor" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="IdPeriodo" class="form-label">Periodo Académico</label>
+                <select asp-for="IdPeriodo" asp-items="@ViewBag.ListaPeriodos" class="form-select">
+                    <option value="">-- Seleccione un Periodo --</option>
+                </select>
+                <span asp-validation-for="IdPeriodo" class="text-danger"></span>
+            </div>
+
+            <hr class="border-secondary opacity-25 my-4" />
+            <p class="text-accent fw-bold mb-3"><i class="bi bi-clock-history me-2"></i>Horario de la Clase</p>
+
+            <div class="mb-4">
+                <label asp-for="DiaSemana" class="form-label">Día de la Semana</label>
+                <select asp-for="DiaSemana" class="form-select">
+                    <option value="">-- Seleccione un Día --</option>
+                    <option value="Lunes">Lunes</option>
+                    <option value="Martes">Martes</option>
+                    <option value="Miércoles">Miércoles</option>
+                    <option value="Jueves">Jueves</option>
+                    <option value="Viernes">Viernes</option>
+                    <option value="Sábado">Sábado</option>
+                    <option value="Domingo">Domingo</option>
+                </select>
+                <span asp-validation-for="DiaSemana" class="text-danger"></span>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-6">
+                    <label asp-for="HoraInicio" class="form-label">Hora de Inicio</label>
+                    <input asp-for="HoraInicio" type="time" class="form-control" />
+                    <span asp-validation-for="HoraInicio" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="HoraFin" class="form-label">Hora de Fin</label>
+                    <input asp-for="HoraFin" type="time" class="form-control" />
+                    <span asp-validation-for="HoraFin" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="d-grid gap-3">
+                <button type="submit" class="btn btn-bto-primary btn-lg">Guardar Cambios</button>
+                <a asp-action="ListarGrupos" class="btn btn-link text-muted text-decoration-none fw-bold text-center">Cancelar y volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

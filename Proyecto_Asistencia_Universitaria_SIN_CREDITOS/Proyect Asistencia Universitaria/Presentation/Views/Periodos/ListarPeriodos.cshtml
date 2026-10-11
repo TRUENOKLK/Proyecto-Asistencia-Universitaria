@@ -1,0 +1,58 @@
+@model IEnumerable<Aplication.DTos.PeriodoDto>
+@{
+    ViewData["Title"] = "Listado de Periodos";
+}
+
+<div class="container py-4 uni-animate-in">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading">Periodos Académicos<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Gestión de semestres o cuatrimestres</p>
+        <a asp-action="NuevoPeriodo" class="btn btn-bto-primary mt-3">
+            <i class="bi bi-plus-circle me-2"></i>Registrar Nuevo Periodo
+        </a>
+    </div>
+
+    <div class="table-custom" style="max-width: 950px; margin: auto;">
+        <table class="table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Nombre (Ej: 2026-I)</th>
+                    <th>Fecha de Inicio</th>
+                    <th>Fecha de Fin</th>
+                    <th class="text-center" style="width: 160px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-accent fw-bold">#@item.IdPeriodo</td>
+                            <td class="fw-semibold">@item.NombrePeriodo</td>
+                            <td>@item.FechaInicio.ToShortDateString()</td>
+                            <td>@item.FechaFin.ToShortDateString()</td>
+                            <td class="text-center">
+                                <a asp-action="EditarPeriodo" asp-route-id="@item.IdPeriodo" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="EliminarPeriodo" asp-route-id="@item.IdPeriodo" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este periodo?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">No hay periodos registrados.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Aplication.DTos.RegistroAsistenciaDto>
+@{
+    ViewData["Title"] = "Tomar Asistencia";
+    int idGrupo = ViewBag.IdGrupo;
+    int idSesion = ViewBag.IdSesion;
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading text-white" style="font-size: 2.8rem;">Tomar Asistencia<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Marca el estado de cada estudiante para esta sesión</p>
+        <a asp-action="SesionesPorGrupo" asp-route-idGrupo="@idGrupo" class="btn btn-link text-muted text-decoration-none">
+            <i class="bi bi-arrow-left me-1"></i>Volver a Sesiones
+        </a>
+    </div>
+
+    <div id="alertaGlobal" class="alert d-none rounded-3" style="max-width: 700px; margin: 0 auto 1.5rem;"></div>
+
+    <div class="table-custom">
+        <table class="table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Carnet</th>
+                    <th>Estudiante</th>
+                    <th style="width: 340px;">Estado</th>
+                    <th class="text-center" style="width: 100px;">Guardar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var est in Model)
+                    {
+                        <tr data-id-estudiante="@est.IdEstudiante">
+                            <td class="text-accent fw-bold">@est.Carnet</td>
+                            <td class="text-white">@est.NombreCompleto</td>
+                            <td>
+                                <div class="btn-group btn-group-sm estado-asistencia" role="group">
+                                    <input type="radio" class="btn-check" name="estado-@est.IdEstudiante" id="presente-@est.IdEstudiante" value="Presente" autocomplete="off" checked>
+                                    <label class="btn btn-outline-success" for="presente-@est.IdEstudiante">Presente</label>
+
+                                    <input type="radio" class="btn-check" name="estado-@est.IdEstudiante" id="tardanza-@est.IdEstudiante" value="Tardanza" autocomplete="off">
+                                    <label class="btn btn-outline-warning" for="tardanza-@est.IdEstudiante">Tardanza</label>
+
+                                    <input type="radio" class="btn-check" name="estado-@est.IdEstudiante" id="justificada-@est.IdEstudiante" value="Justificada" autocomplete="off">
+                                    <label class="btn btn-outline-info" for="justificada-@est.IdEstudiante">Justificada</label>
+
+                                    <input type="radio" class="btn-check" name="estado-@est.IdEstudiante" id="ausente-@est.IdEstudiante" value="Ausente" autocomplete="off">
+                                    <label class="btn btn-outline-danger" for="ausente-@est.IdEstudiante">Ausente</label>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-bto-primary rounded-pill px-3 btn-guardar-fila">
+                                    <i class="bi bi-check2"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            Este grupo no tiene estudiantes inscritos todavía.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="text-center mt-4">
+            <button type="button" id="btnGuardarTodo" class="btn btn-bto-primary btn-lg px-5">
+                <i class="bi bi-cloud-check me-2"></i>Guardar Asistencia de Todos
+            </button>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const idSesion = @idSesion;
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            const alerta = document.getElementById('alertaGlobal');
+
+            function mostrarAlerta(mensaje, tipo) {
+                alerta.className = `alert alert-${tipo} rounded-3`;
+                alerta.textContent = mensaje;
+                alerta.classList.remove('d-none');
+                setTimeout(() => alerta.classList.add('d-none'), 3500);
+            }
+
+            async function guardarFila(fila) {
+                const idEstudiante = fila.dataset.idEstudiante;
+                const estadoInput = fila.querySelector(`input[name="estado-${idEstudiante}"]:checked`);
+                const estado = estadoInput ? estadoInput.value : 'Presente';
+
+                const body = new URLSearchParams();
+                body.append('IdSesion', idSesion);
+                body.append('IdEstudiante', idEstudiante);
+                body.append('EstadoAsistencia', estado);
+
+                try {
+                    const resp = await fetch('@Url.Action("GuardarAsistenciaIndividual", "Operaciones")', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': token
+                        },
+                        body: body.toString()
+                    });
+                    const data = await resp.json();
+                    return data.success === true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            document.querySelectorAll('.btn-guardar-fila').forEach(btn => {
+                btn.addEventListener('click', async function () {
+                    const fila = btn.closest('tr');
+                    const ok = await guardarFila(fila);
+                    mostrarAlerta(ok ? 'Asistencia guardada.' : 'No se pudo guardar la asistencia.', ok ? 'success' : 'danger');
+                });
+            });
+
+            const btnTodo = document.getElementById('btnGuardarTodo');
+            if (btnTodo) {
+                btnTodo.addEventListener('click', async function () {
+                    btnTodo.disabled = true;
+                    btnTodo.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+
+                    const filas = document.querySelectorAll('tbody tr[data-id-estudiante]');
+                    let exitos = 0;
+                    for (const fila of filas) {
+                        const ok = await guardarFila(fila);
+                        if (ok) exitos++;
+                    }
+
+                    btnTodo.disabled = false;
+                    btnTodo.innerHTML = '<i class="bi bi-cloud-check me-2"></i>Guardar Asistencia de Todos';
+                    mostrarAlerta(`Se guardó la asistencia de ${exitos} de ${filas.length} estudiantes.`, exitos === filas.length ? 'success' : 'warning');
+                });
+            }
+        })();
+    </script>
+}

@@ -1,0 +1,58 @@
+@model IEnumerable<Aplication.DTos.GrupoDto>
+@{
+    ViewData["Title"] = ViewBag.Titulo ?? "Horario Semanal";
+    string[] dias = { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
+    bool esSoloProfesor = User.IsInRole("Profesor") && !User.IsInRole("Administrador");
+}
+
+<div class="container py-4 uni-animate-in">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading">@ViewData["Title"]<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Vista semanal de las clases organizadas por día y hora</p>
+        <a asp-action="ListarGrupos" class="btn btn-link text-muted text-decoration-none mt-1">
+            <i class="bi bi-arrow-left me-1"></i>Volver a Grupos
+        </a>
+    </div>
+
+    <div class="row g-3">
+        @foreach (var dia in dias)
+        {
+            var clasesDelDia = (Model ?? Enumerable.Empty<Aplication.DTos.GrupoDto>())
+                .Where(g => string.Equals(g.DiaSemana, dia, StringComparison.OrdinalIgnoreCase) && g.HoraInicio.HasValue)
+                .OrderBy(g => g.HoraInicio)
+                .ToList();
+
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                <div class="bto-form-card h-100">
+                    <h5 class="text-accent fw-bold mb-3 d-flex align-items-center">
+                        <i class="bi bi-calendar-day me-2"></i>@dia
+                    </h5>
+
+                    @if (clasesDelDia.Any())
+                    {
+                        foreach (var clase in clasesDelDia)
+                        {
+                            <div class="mb-3 p-3 rounded-3" style="background-color: #f8f9fd; border: 1px solid var(--uni-border);">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="badge rounded-pill uni-badge-primary">
+                                        @clase.HoraInicio!.Value.ToString(@"hh\:mm") - @clase.HoraFin!.Value.ToString(@"hh\:mm")
+                                    </span>
+                                    <span class="fw-bold">@clase.NombreGrupo</span>
+                                </div>
+                                <div class="small" style="color: var(--uni-text);">@clase.NombreAsignatura</div>
+                                @if (!esSoloProfesor)
+                                {
+                                    <div class="text-muted small"><i class="bi bi-person-fill me-1"></i>@clase.Docente</div>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted small mb-0">Sin clases este día.</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

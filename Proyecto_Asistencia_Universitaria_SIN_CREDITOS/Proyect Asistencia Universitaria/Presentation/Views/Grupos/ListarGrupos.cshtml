@@ -1,0 +1,92 @@
+@model IEnumerable<Aplication.DTos.GrupoDto>
+@{
+    ViewData["Title"] = "Listado de Grupos";
+}
+
+<div class="container py-4 uni-animate-in">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading">Grupos de Clase<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Aulas, asignaturas, docentes y horarios asignados</p>
+        <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+            @if (User.IsInRole("Administrador"))
+            {
+                <a asp-action="NuevoGrupo" class="btn btn-bto-primary">
+                    <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Grupo
+                </a>
+            }
+            <a asp-action="Horario" class="btn btn-outline-light">
+                <i class="bi bi-calendar-week me-2"></i>@(User.IsInRole("Profesor") && !User.IsInRole("Administrador") ? "Mi Horario Semanal" : "Ver Horario Semanal")
+            </a>
+        </div>
+    </div>
+
+    <div class="table-custom">
+        <table class="table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Grupo</th>
+                    <th>Asignatura</th>
+                    <th>Docente a Cargo</th>
+                    <th>Periodo</th>
+                    <th>Horario</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-accent fw-bold">@item.NombreGrupo</td>
+                            <td class="fw-semibold">@item.NombreAsignatura</td>
+                            <td><i class="bi bi-person-fill text-muted me-2"></i>@item.Docente</td>
+                            <td><span class="badge rounded-pill uni-badge-primary">@item.NombrePeriodo</span></td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.DiaSemana) && item.HoraInicio.HasValue && item.HoraFin.HasValue)
+                                {
+                                    <span class="badge rounded-pill uni-badge-primary px-3 py-2">
+                                        <i class="bi bi-clock me-1"></i>@item.DiaSemana
+                                        &middot; @item.HoraInicio.Value.ToString(@"hh\:mm") - @item.HoraFin.Value.ToString(@"hh\:mm")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Sin definir</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-controller="Operaciones" asp-action="SesionesPorGrupo" asp-route-idGrupo="@item.IdGrupo" class="btn btn-sm btn-bto-primary rounded-pill px-3">
+                                    <i class="bi bi-clipboard2-check me-1"></i>Ver Sesiones
+                                </a>
+                                @if (User.IsInRole("Administrador"))
+                                {
+                                    <a asp-action="GestionarEstudiantes" asp-route-idGrupo="@item.IdGrupo" class="btn btn-sm btn-bto-primary rounded-pill px-3 ms-1" title="Inscribir estudiantes">
+                                        <i class="bi bi-person-plus-fill me-1"></i>Estudiantes
+                                    </a>
+                                    <a asp-action="EditarGrupo" asp-route-id="@item.IdGrupo" class="btn btn-sm btn-outline-secondary rounded-pill px-3 ms-1" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form asp-action="EliminarGrupo" asp-route-id="@item.IdGrupo" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este grupo? Esta acción no se puede deshacer.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-collection display-6 d-block mb-2 opacity-50"></i>
+                            <h5 class="fw-light">Todavía no hay grupos creados.</h5>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

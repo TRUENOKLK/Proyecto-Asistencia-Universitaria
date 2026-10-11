@@ -1,0 +1,82 @@
+﻿@model IEnumerable<Aplication.DTos.MiAsistenciaDto>
+@{
+    ViewData["Title"] = "Mi Asistencia";
+    var lista = Model?.ToList() ?? new List<Aplication.DTos.MiAsistenciaDto>();
+    int total = lista.Count;
+    int presentes = lista.Count(r => r.EstadoAsistencia == "Presente");
+    double porcentaje = total > 0 ? Math.Round((double)presentes / total * 100, 1) : 0;
+}
+
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading text-white" style="font-size: 2.8rem;">Mi Asistencia<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Historial de tus clases registradas hasta hoy</p>
+    </div>
+
+    <div class="row justify-content-center g-4 mb-5">
+        <div class="col-md-3">
+            <div class="bto-form-card text-center py-4">
+                <div class="text-accent fw-bold" style="font-size: 2.2rem;">@total</div>
+                <div class="text-muted">Clases registradas</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="bto-form-card text-center py-4">
+                <div class="fw-bold" style="font-size: 2.2rem; color: @(porcentaje >= 75 ? "#4E9A92" : porcentaje >= 50 ? "#e0a800" : "#dc3545");">
+                    @porcentaje%
+                </div>
+                <div class="text-muted">Mi asistencia</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-custom">
+        <table class="table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Asignatura</th>
+                    <th>Grupo</th>
+                    <th>Tema</th>
+                    <th class="text-center">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (lista.Any())
+                {
+                    foreach (var reg in lista)
+                    {
+                        <tr>
+                            <td class="text-white">@reg.FechaSesion.ToString("dd/MM/yyyy")</td>
+                            <td class="text-accent fw-bold">@reg.NombreAsignatura</td>
+                            <td>@reg.NombreGrupo</td>
+                            <td>@reg.Tema</td>
+                            <td class="text-center">
+                                @{
+                                    var (badgeClass, icono) = reg.EstadoAsistencia switch
+                                    {
+                                        "Presente" => ("bg-success", "bi-check-circle"),
+                                        "Tardanza" => ("bg-warning text-dark", "bi-clock-history"),
+                                        "Justificada" => ("bg-info text-dark", "bi-file-earmark-text"),
+                                        _ => ("bg-danger", "bi-x-circle")
+                                    };
+                                }
+                                <span class="badge rounded-pill @badgeClass px-3 py-2">
+                                    <i class="bi @icono me-1"></i>@reg.EstadoAsistencia
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            Todavía no tienes asistencia registrada. En cuanto tu profesor tome asistencia en clase, aparecerá aquí.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

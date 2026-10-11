@@ -1,0 +1,60 @@
+@model Aplication.DTos.EstudianteDto
+@{
+    ViewData["Title"] = "Editar Estudiante";
+}
+
+<div class="container uni-animate-in" style="max-width: 650px; margin-bottom: 4rem;">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading" style="font-size: 2.3rem;">Editar Estudiante<span class="text-accent">.</span></h1>
+        <p class="text-muted">@Model.Email</p>
+    </div>
+
+    <div class="bto-form-card">
+        <form asp-action="EditarEstudiante" method="post">
+            <input type="hidden" asp-for="IdEstudiante" />
+            <input type="hidden" asp-for="Email" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-4">
+                <label class="form-label">Carnet Universitario</label>
+                <input asp-for="Carnet" class="form-control" readonly style="background-color: #f4f6fb;" />
+                <div class="form-text">El carnet no se puede modificar.</div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <label asp-for="Nombres" class="form-label"></label>
+                    <input asp-for="Nombres" class="form-control" />
+                    <span asp-validation-for="Nombres" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Apellidos" class="form-label"></label>
+                    <input asp-for="Apellidos" class="form-control" />
+                    <span asp-validation-for="Apellidos" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <label asp-for="IdCarrera" class="form-label">Carrera</label>
+                <select asp-for="IdCarrera" asp-items="ViewBag.ListaCarreras" class="form-select">
+                    <option value="">-- Selecciona una carrera --</option>
+                </select>
+                <span asp-validation-for="IdCarrera" class="text-danger"></span>
+            </div>
+
+            <div class="alert alert-light border d-flex align-items-start" style="font-size: 0.85rem; background-color: #f8f9fd;">
+                <i class="bi bi-info-circle me-2 mt-1"></i>
+                <span>El correo institucional y la contraseña no se editan desde aquí. Usa el botón "Activar/Desactivar" en el listado para controlar su acceso.</span>
+            </div>
+
+            <div class="d-grid gap-3 mt-4">
+                <button type="submit" class="btn btn-bto-primary btn-lg">Guardar Cambios</button>
+                <a asp-action="ListarEstudiantes" class="btn btn-link text-muted text-decoration-none fw-bold text-center">Cancelar y volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

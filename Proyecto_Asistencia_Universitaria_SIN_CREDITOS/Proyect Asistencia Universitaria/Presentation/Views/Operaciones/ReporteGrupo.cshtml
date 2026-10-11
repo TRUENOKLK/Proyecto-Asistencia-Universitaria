@@ -1,0 +1,158 @@
+﻿@model IEnumerable<Aplication.DTos.ReporteAsistenciaDto>
+@{
+    ViewData["Title"] = "Reporte de Asistencia";
+    int idGrupo = ViewBag.IdGrupo;
+    var lista = Model?.ToList() ?? new List<Aplication.DTos.ReporteAsistenciaDto>();
+    var sesiones = lista.GroupBy(r => new { r.FechaSesion, r.Tema })
+                         .OrderByDescending(g => g.Key.FechaSesion)
+                         .ToList();
+
+    int totalRegistros = lista.Count;
+    int totalPresentes = lista.Count(r => r.EstadoAsistencia == "Presente");
+    double porcentajeAsistencia = totalRegistros > 0 ? Math.Round((double)totalPresentes / totalRegistros * 100, 1) : 0;
+
+    var porEstudiante = lista
+        .GroupBy(r => new { r.Carnet, r.Estudiante })
+        .Select(g => new
+        {
+            g.Key.Carnet,
+            g.Key.Estudiante,
+            Presentes = g.Count(x => x.EstadoAsistencia == "Presente"),
+            Tardanzas = g.Count(x => x.EstadoAsistencia == "Tardanza"),
+            Justificadas = g.Count(x => x.EstadoAsistencia == "Justificada"),
+            Ausencias = g.Count(x => x.EstadoAsistencia == "Ausente"),
+            Total = g.Count()
+        })
+        .OrderBy(e => e.Estudiante)
+        .ToList();
+}
+
+<div class="container py-4 uni-animate-in">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading" style="font-size: 2.6rem;">Reporte de Asistencia<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Historial completo de asistencia del grupo, sesión por sesión</p>
+        <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <a asp-action="SesionesPorGrupo" asp-route-idGrupo="@idGrupo" class="btn btn-link text-muted text-decoration-none">
+                <i class="bi bi-arrow-left me-1"></i>Volver a Sesiones
+            </a>
+            <a asp-action="ExportarReportePdf" asp-route-idGrupo="@idGrupo" class="btn btn-bto-primary">
+                <i class="bi bi-file-earmark-pdf me-2"></i>Descargar reporte en PDF
+            </a>
+        </div>
+    </div>
+
+  
+    <div class="row justify-content-center g-4 mb-5">
+        <div class="col-md-3">
+            <div class="bto-form-card text-center py-4">
+                <div class="text-accent fw-bold" style="font-size: 2.2rem;">@sesiones.Count</div>
+                <div class="text-muted">Sesiones registradas</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="bto-form-card text-center py-4">
+                <div class="text-accent fw-bold" style="font-size: 2.2rem;">@totalRegistros</div>
+                <div class="text-muted">Registros de asistencia</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="bto-form-card text-center py-4">
+                <div class="fw-bold" style="font-size: 2.2rem; color: @(porcentajeAsistencia >= 75 ? "#4E9A92" : porcentajeAsistencia >= 50 ? "#e0a800" : "#dc3545");">
+                    @porcentajeAsistencia%
+                </div>
+                <div class="text-muted">Asistencia general</div>
+            </div>
+        </div>
+    </div>
+
+    @if (porEstudiante.Any())
+    {
+        <h4 class="fw-bold mb-3"><i class="bi bi-people text-accent me-2"></i>Resumen por estudiante</h4>
+        <div class="table-custom mb-5">
+            <table class="table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Carnet</th>
+                        <th>Estudiante</th>
+                        <th class="text-center">Presente</th>
+                        <th class="text-center">Tardanza</th>
+                        <th class="text-center">Justificada</th>
+                        <th class="text-center">Ausente</th>
+                        <th class="text-center">% Asistencia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in porEstudiante)
+                    {
+                        double pct = e.Total > 0 ? Math.Round(e.Presentes * 100.0 / e.Total, 1) : 0;
+                        <tr>
+                            <td class="text-accent fw-bold">@e.Carnet</td>
+                            <td class="fw-semibold">@e.Estudiante</td>
+                            <td class="text-center">@e.Presentes</td>
+                            <td class="text-center">@e.Tardanzas</td>
+                            <td class="text-center">@e.Justificadas</td>
+                            <td class="text-center">@e.Ausencias</td>
+                            <td class="text-center fw-bold" style="color: @(pct >= 75 ? "#0f6b53" : pct >= 50 ? "#b8860b" : "#c0392b");">@pct%</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (!sesiones.Any())
+    {
+        <div class="table-custom">
+            <div class="text-center py-5 text-muted">
+                Todavía no hay asistencia registrada para este grupo.
+            </div>
+        </div>
+    }
+    else
+    {
+        foreach (var sesion in sesiones)
+        {
+            <div class="table-custom mb-4">
+                <div class="px-4 pt-3 pb-2 d-flex justify-content-between align-items-center flex-wrap"
+                     style="border-bottom: 1px solid var(--uni-border);">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-event text-accent me-2"></i>@sesion.Key.FechaSesion.ToString("dd/MM/yyyy")
+                        <span class="text-muted fw-normal">— @sesion.Key.Tema</span>
+                    </h5>
+                </div>
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Carnet</th>
+                            <th>Estudiante</th>
+                            <th class="text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reg in sesion.OrderBy(r => r.Estudiante))
+                        {
+                            <tr>
+                                <td class="text-accent fw-bold">@reg.Carnet</td>
+                                <td class="text-white">@reg.Estudiante</td>
+                                <td class="text-center">
+                                    @{
+                                        var (badgeClass, icono) = reg.EstadoAsistencia switch
+                                        {
+                                            "Presente" => ("bg-success", "bi-check-circle"),
+                                            "Tardanza" => ("bg-warning text-dark", "bi-clock-history"),
+                                            "Justificada" => ("bg-info text-dark", "bi-file-earmark-text"),
+                                            _ => ("bg-danger", "bi-x-circle")
+                                        };
+                                    }
+                                    <span class="badge rounded-pill @badgeClass px-3 py-2">
+                                        <i class="bi @icono me-1"></i>@reg.EstadoAsistencia
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>

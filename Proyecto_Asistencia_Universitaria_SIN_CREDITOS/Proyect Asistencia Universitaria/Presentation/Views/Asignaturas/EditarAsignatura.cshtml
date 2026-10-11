@@ -1,0 +1,47 @@
+@model Aplication.DTos.AsignaturaDto
+@{
+    ViewData["Title"] = "Editar Asignatura";
+}
+
+<div class="container uni-animate-in" style="max-width: 600px; margin-bottom: 4rem;">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading" style="font-size: 2.3rem;">Editar Asignatura<span class="text-accent">.</span></h1>
+    </div>
+
+    <div class="bto-form-card">
+        <form asp-action="EditarAsignatura" method="post">
+            <input type="hidden" asp-for="IdAsignatura" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label asp-for="Codigo" class="form-label">Código</label>
+                    <input asp-for="Codigo" class="form-control" />
+                    <span asp-validation-for="Codigo" class="text-danger"></span>
+                </div>
+                <div class="col-md-8">
+                    <label asp-for="NombreAsignatura" class="form-label">Nombre de la Asignatura</label>
+                    <input asp-for="NombreAsignatura" class="form-control" />
+                    <span asp-validation-for="NombreAsignatura" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <label asp-for="IdCarrera" class="form-label">Carrera Perteneciente</label>
+                <select asp-for="IdCarrera" asp-items="@ViewBag.ListaCarreras" class="form-select">
+                    <option value="">-- Seleccione una Carrera --</option>
+                </select>
+                <span asp-validation-for="IdCarrera" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid gap-3">
+                <button type="submit" class="btn btn-bto-primary btn-lg">Guardar Cambios</button>
+                <a asp-action="ListarAsignaturas" class="btn btn-link text-muted text-decoration-none fw-bold text-center">Cancelar y volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,54 @@
+@model IEnumerable<Aplication.DTos.FacultadDto>
+@{
+    ViewData["Title"] = "Listado de Facultades";
+}
+
+<div class="container py-4 uni-animate-in">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading">Facultades<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Estructura organizativa principal</p>
+        <a asp-action="NuevaFacultad" class="btn btn-bto-primary mt-3">
+            <i class="bi bi-plus-circle me-2"></i>Registrar Nueva Facultad
+        </a>
+    </div>
+
+    <div class="table-custom" style="max-width: 800px; margin: auto;">
+        <table class="table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Nombre de la Facultad</th>
+                    <th class="text-center" style="width: 160px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-accent fw-bold">#@item.IdFacultad</td>
+                            <td class="fw-semibold">@item.NombreFacultad</td>
+                            <td class="text-center">
+                                <a asp-action="EditarFacultad" asp-route-id="@item.IdFacultad" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="EliminarFacultad" asp-route-id="@item.IdFacultad" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar esta facultad?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="text-center py-5 text-muted">No hay facultades registradas.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

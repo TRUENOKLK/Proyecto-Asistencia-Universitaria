@@ -1,0 +1,49 @@
+﻿@model Aplication.DTos.CarreraDto
+@{
+    ViewData["Title"] = "Nueva Carrera";
+}
+
+<div class="container py-5" style="max-width: 650px;">
+   
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-dark">Nueva Carrera<span class="text-primary">.</span></h1>
+        <p class="text-secondary">Asigna la carrera a una facultad de la universidad</p>
+    </div>
+
+   
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+            <form asp-action="NuevaCarrera" method="post">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger rounded-3 p-3 mb-4">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-0"></div>
+                    </div>
+                }
+
+               
+                <div class="mb-4">
+                    <label asp-for="NombreCarrera" class="form-label fw-semibold text-dark">Nombre de la Carrera</label>
+                    <input asp-for="NombreCarrera" class="form-control form-control-lg bg-light border-0" placeholder="Ej: Ingeniería en Sistemas" />
+                    <span asp-validation-for="NombreCarrera" class="text-danger small"></span>
+                </div>
+
+         
+                <div class="mb-5">
+                    <label asp-for="IdFacultad" class="form-label fw-semibold text-dark">Facultad a la que pertenece</label>
+                    <select asp-for="IdFacultad" asp-items="ViewBag.ListaFacultades" class="form-select form-select-lg bg-light border-0">
+                        <option value="">-- Selecciona una Facultad --</option>
+                    </select>
+                    <span asp-validation-for="IdFacultad" class="text-danger small"></span>
+                </div>
+
+             
+                <div class="d-grid gap-3">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm">Guardar Carrera</button>
+                    <a asp-action="ListarCarreras" class="btn btn-light btn-lg rounded-pill fw-semibold text-secondary">Cancelar y volver</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

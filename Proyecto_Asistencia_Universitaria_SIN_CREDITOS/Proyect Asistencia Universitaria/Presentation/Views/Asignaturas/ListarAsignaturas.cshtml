@@ -1,0 +1,56 @@
+@model IEnumerable<Aplication.DTos.AsignaturaDto>
+@{
+    ViewData["Title"] = "Listado de Asignaturas";
+}
+
+<div class="container py-4 uni-animate-in">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading">Catálogo de Asignaturas<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Materias impartidas por carrera</p>
+        <a asp-action="NuevaAsignatura" class="btn btn-bto-primary mt-3">
+            <i class="bi bi-plus-circle me-2"></i>Registrar Nueva Asignatura
+        </a>
+    </div>
+
+    <div class="table-custom">
+        <table class="table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre de la Asignatura</th>
+                    <th>Carrera a la que pertenece</th>
+                    <th class="text-center" style="width: 160px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-accent fw-bold">@item.Codigo</td>
+                            <td class="fw-semibold">@item.NombreAsignatura</td>
+                            <td>@item.NombreCarrera</td>
+                            <td class="text-center">
+                                <a asp-action="EditarAsignatura" asp-route-id="@item.IdAsignatura" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="EliminarAsignatura" asp-route-id="@item.IdAsignatura" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar esta asignatura?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">No hay asignaturas registradas.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

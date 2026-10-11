@@ -1,0 +1,339 @@
+/* ============================================================================
+   Asistencia Universitaria — Tema claro y profesional
+   Reemplaza el tema oscuro original. Estas clases (.bto-*, .table-custom,
+   .btn-bto-primary, etc.) ya se usan en TODAS las vistas existentes del
+   proyecto, así que al redefinirlas aquí el look & feel se actualiza en toda
+   la aplicación sin tener que tocar cada .cshtml uno por uno.
+   ============================================================================ */
+
+:root {
+  --uni-primary: #3457D5;      /* Azul institucional, confiable y accesible */
+  --uni-primary-dark: #253f9e;
+  --uni-accent: #14b8a6;       /* Verde-azulado para éxito / detalles */
+  --uni-bg: #f4f6fb;           /* Fondo general claro */
+  --uni-surface: #ffffff;      /* Tarjetas / superficies */
+  --uni-border: #e3e8f2;
+  --uni-text: #1f2430;
+  --uni-text-muted: #6b7280;
+  --uni-danger: #e5484d;
+  --uni-warning: #f2a33c;
+  --uni-radius: 16px;
+  --uni-shadow: 0 8px 24px rgba(31, 41, 55, 0.06);
+  --uni-shadow-hover: 0 16px 40px rgba(31, 41, 55, 0.12);
+
+  /* Alias de compatibilidad: por si alguna vista antigua todavía referencia
+     las variables del tema oscuro original (--bto-blue), que dejaron de
+     existir. Sin este alias, var(--bto-blue) no resuelve a nada y el
+     elemento queda sin fondo, con texto blanco invisible encima. */
+  --bto-blue: var(--uni-primary);
+  --bto-black: var(--uni-text);
+}
+
+html { font-size: 14px; }
+@media (min-width: 768px) { html { font-size: 16px; } }
+html { position: relative; min-height: 100%; }
+
+body {
+  margin-bottom: 60px;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  background-color: var(--uni-bg);
+  color: var(--uni-text);
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem #ffffff, 0 0 0 0.25rem rgba(52, 87, 213, 0.35);
+}
+
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder { color: var(--uni-text-muted); text-align: end; }
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder { text-align: start; }
+
+/* ---------------------------------------------------------------------------
+   Animaciones reutilizables
+--------------------------------------------------------------------------- */
+@keyframes uniFadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes uniFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes uniPop {
+  0%   { opacity: 0; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes uniSpin {
+  to { transform: rotate(360deg); }
+}
+
+.uni-animate-in { animation: uniFadeInUp 0.5s ease both; }
+.uni-animate-in-delay-1 { animation: uniFadeInUp 0.5s ease 0.08s both; }
+.uni-animate-in-delay-2 { animation: uniFadeInUp 0.5s ease 0.16s both; }
+.uni-animate-pop { animation: uniPop 0.35s ease both; }
+
+main[role="main"] { animation: uniFadeIn 0.35s ease both; }
+
+/* Spinner pequeño para botones en estado "enviando..." */
+.uni-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: uniSpin 0.7s linear infinite;
+  vertical-align: -2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Navbar
+--------------------------------------------------------------------------- */
+.navbar-custom {
+  background-color: var(--uni-surface) !important;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--uni-border);
+  box-shadow: 0 2px 12px rgba(31, 41, 55, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--uni-primary) !important;
+  letter-spacing: -0.5px;
+}
+
+.navbar-custom .nav-link {
+  color: var(--uni-text) !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin: 0 0.35rem;
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.navbar-custom .nav-link:hover { background-color: rgba(52, 87, 213, 0.08); color: var(--uni-primary) !important; }
+.navbar-custom .nav-link.active {
+  background-color: rgba(52, 87, 213, 0.12);
+  color: var(--uni-primary) !important;
+  font-weight: 600;
+}
+.navbar-custom .dropdown-menu {
+  border: 1px solid var(--uni-border);
+  border-radius: 14px;
+  box-shadow: var(--uni-shadow-hover);
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  animation: uniFadeInUp 0.18s ease both;
+}
+.navbar-custom .dropdown-item {
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.92rem;
+  color: var(--uni-text);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.navbar-custom .dropdown-item:hover,
+.navbar-custom .dropdown-item:focus {
+  background-color: rgba(52, 87, 213, 0.08);
+  color: var(--uni-primary);
+}
+.navbar-custom .dropdown-toggle::after { vertical-align: 0.1em; }
+
+.navbar-custom .text-white-50 { color: var(--uni-text-muted) !important; }
+
+/* ---------------------------------------------------------------------------
+   Botones
+--------------------------------------------------------------------------- */
+.btn-bto-primary {
+  background-color: var(--uni-primary);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.65rem 2rem;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-shadow: 0 6px 16px rgba(52, 87, 213, 0.25);
+}
+.btn-bto-primary:hover {
+  background-color: var(--uni-primary-dark);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(52, 87, 213, 0.3);
+}
+.btn-bto-primary:disabled { opacity: 0.7; transform: none; }
+
+.btn-outline-light { border-color: var(--uni-border); color: var(--uni-text); }
+.navbar-custom .btn-outline-light:hover { background-color: var(--uni-danger); border-color: var(--uni-danger); color: #fff; }
+
+/* ---------------------------------------------------------------------------
+   Encabezados
+--------------------------------------------------------------------------- */
+.bto-heading { font-weight: 800; font-size: 3rem; letter-spacing: -1.5px; margin-bottom: 0.5rem; color: var(--uni-text); }
+.text-accent { color: var(--uni-primary); }
+.text-white { color: var(--uni-text) !important; } /* las vistas antiguas usaban text-white sobre fondo oscuro */
+
+/* ---------------------------------------------------------------------------
+   Tablas
+--------------------------------------------------------------------------- */
+.table-custom {
+  border-radius: var(--uni-radius);
+  overflow: hidden;
+  border: 1px solid var(--uni-border);
+  background-color: var(--uni-surface);
+  box-shadow: var(--uni-shadow);
+}
+.table-custom th {
+  background-color: #f8f9fd;
+  color: var(--uni-text);
+  font-weight: 600;
+  padding: 1.1rem 1rem;
+  border-bottom: 1px solid var(--uni-border);
+}
+.table-custom td {
+  padding: 1rem;
+  vertical-align: middle;
+  color: var(--uni-text);
+  background-color: var(--uni-surface);
+  border-bottom: 1px solid var(--uni-border);
+}
+.table-custom tr { transition: background-color 0.15s ease; }
+.table-custom tr:hover td { background-color: #f4f7ff; }
+.table-custom tr:last-child td { border-bottom: none; }
+
+/* ---------------------------------------------------------------------------
+   Formularios en tarjeta
+--------------------------------------------------------------------------- */
+.bto-form-card {
+  background-color: var(--uni-surface);
+  border: 1px solid var(--uni-border);
+  border-radius: 20px;
+  padding: 2.75rem;
+  box-shadow: var(--uni-shadow);
+}
+.bto-form-card .form-label { color: var(--uni-text); font-weight: 600; margin-bottom: 0.4rem; }
+.bto-form-card .form-control,
+.bto-form-card .form-select {
+  background-color: #fbfcfe;
+  border: 1.5px solid var(--uni-border);
+  color: var(--uni-text);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.bto-form-card .form-control:focus,
+.bto-form-card .form-select:focus {
+  background-color: #ffffff;
+  border-color: var(--uni-primary);
+  box-shadow: 0 0 0 0.2rem rgba(52, 87, 213, 0.15);
+  color: var(--uni-text);
+}
+.bto-form-card .form-control::placeholder { color: #a5adba; }
+.bto-form-card .form-control.is-invalid,
+.bto-form-card .field-validation-error { border-color: var(--uni-danger); }
+.bto-form-card .text-danger { font-size: 0.85rem; }
+
+/* ---------------------------------------------------------------------------
+   Tarjetas del panel de inicio
+--------------------------------------------------------------------------- */
+.bto-card {
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--uni-border);
+  box-shadow: var(--uni-shadow);
+}
+.bto-card:hover { transform: translateY(-8px); box-shadow: var(--uni-shadow-hover); }
+
+.bto-card-pink { background: linear-gradient(160deg, #ffe3ef 0%, #ffffff 75%); }
+.bto-card-blue { background: linear-gradient(160deg, #dbe6ff 0%, #ffffff 75%); }
+.bto-card-teal { background: linear-gradient(160deg, #d7f5ef 0%, #ffffff 75%); }
+.bto-card-amber { background: linear-gradient(160deg, #fdf0d5 0%, #ffffff 75%); }
+
+.bto-card-icon-bg {
+  position: absolute; top: -10px; right: -20px;
+  font-size: 10rem; color: rgba(52, 87, 213, 0.08);
+  z-index: 1; transition: transform 0.5s ease;
+}
+.bto-card:hover .bto-card-icon-bg { transform: scale(1.1) rotate(-5deg); }
+.bto-card-content { z-index: 2; }
+.bto-card-title { color: var(--uni-text); font-weight: 800; font-size: 1.9rem; line-height: 1.15; margin-bottom: 0.6rem; letter-spacing: -0.5px; }
+.bto-card-text { color: var(--uni-text-muted); font-size: 1rem; margin-bottom: 1.25rem; max-width: 95%; }
+
+.btn-bto-pill {
+  background-color: var(--uni-primary);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.5rem 1.6rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.btn-bto-pill:hover { background-color: var(--uni-primary-dark); color: #fff; transform: translateY(-2px); }
+
+.card-footer-bto { display: flex; justify-content: flex-end; }
+
+/* ---------------------------------------------------------------------------
+   Barra de herramientas de listados (buscador, contador, filtros)
+--------------------------------------------------------------------------- */
+.uni-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.uni-search {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+  max-width: 420px;
+}
+.uni-search i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--uni-text-muted);
+}
+.uni-search input {
+  padding-left: 2.4rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--uni-border);
+  background-color: var(--uni-surface);
+}
+.uni-search input:focus {
+  border-color: var(--uni-primary);
+  box-shadow: 0 0 0 0.2rem rgba(52, 87, 213, 0.15);
+}
+
+.uni-badge-primary {
+  background-color: rgba(52, 87, 213, 0.12);
+  color: var(--uni-primary-dark);
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
+   Alertas / feedback
+--------------------------------------------------------------------------- */
+.uni-alert-success {
+  background-color: #e8f9f4;
+  border: 1px solid #b6ecdd;
+  color: #0f6b53;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  animation: uniPop 0.35s ease both;
+}

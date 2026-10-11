@@ -1,0 +1,32 @@
+@model Aplication.DTos.FacultadDto
+@{
+    ViewData["Title"] = "Editar Facultad";
+}
+
+<div class="container uni-animate-in" style="max-width: 600px; margin-bottom: 4rem;">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading" style="font-size: 2.3rem;">Editar Facultad<span class="text-accent">.</span></h1>
+    </div>
+
+    <div class="bto-form-card">
+        <form asp-action="EditarFacultad" method="post">
+            <input type="hidden" asp-for="IdFacultad" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-5">
+                <label asp-for="NombreFacultad" class="form-label">Nombre Oficial de la Facultad</label>
+                <input asp-for="NombreFacultad" class="form-control" />
+                <span asp-validation-for="NombreFacultad" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid gap-3">
+                <button type="submit" class="btn btn-bto-primary btn-lg">Guardar Cambios</button>
+                <a asp-action="ListarFacultades" class="btn btn-link text-muted text-decoration-none fw-bold text-center">Cancelar y volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,122 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="container-fluid px-4 py-5">
+
+    <div class="text-center mb-5">
+        <h1 style="font-weight: 800; font-size: 4rem; letter-spacing: -2px;">
+            Asistencia universitaria. <span class="text-accent">Punto.</span>
+        </h1>
+        <p class="fs-4 text-muted">
+            Hola, <strong class="text-white">@User.Identity!.Name</strong> — gestiona estudiantes, docentes y asistencia desde aquí.
+        </p>
+    </div>
+
+    @if (User.IsInRole("Administrador"))
+    {
+        <div class="row g-4 mt-4">
+         
+            <div class="col-lg-3 col-md-6">
+                <div class="bto-card bto-card-pink">
+                    <i class="bi bi-people-fill bto-card-icon-bg"></i>
+                    <div class="bto-card-content">
+                        <h2 class="bto-card-title">Comunidad<br>Estudiantil</h2>
+                        <p class="bto-card-text">
+                            Directorio de alumnos: matrícula individual o masiva y control de estado.
+                        </p>
+                        <div class="card-footer-bto">
+                            <a asp-controller="Estudiantes" asp-action="ListarEstudiantes" class="btn-bto-pill">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          
+            <div class="col-lg-3 col-md-6">
+                <div class="bto-card bto-card-blue">
+                    <i class="bi bi-person-video3 bto-card-icon-bg"></i>
+                    <div class="bto-card-content">
+                        <h2 class="bto-card-title">Plantilla<br>Docente</h2>
+                        <p class="bto-card-text">
+                            Personal docente, sus accesos y asignaciones a grupos.
+                        </p>
+                        <div class="card-footer-bto">
+                            <a asp-controller="Profesores" asp-action="ListarProfesores" class="btn-bto-pill">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        
+            <div class="col-lg-3 col-md-6">
+                <div class="bto-card bto-card-teal">
+                    <i class="bi bi-journal-bookmark-fill bto-card-icon-bg"></i>
+                    <div class="bto-card-content">
+                        <h2 class="bto-card-title">Estructura<br>Académica</h2>
+                        <p class="bto-card-text">
+                            Facultades, carreras, asignaturas y periodos académicos.
+                        </p>
+                        <div class="card-footer-bto">
+                            <a asp-controller="Carreras" asp-action="ListarCarreras" class="btn-bto-pill">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+         
+            <div class="col-lg-3 col-md-6">
+                <div class="bto-card bto-card-amber">
+                    <i class="bi bi-clipboard2-check-fill bto-card-icon-bg"></i>
+                    <div class="bto-card-content">
+                        <h2 class="bto-card-title">Grupos y<br>Asistencia</h2>
+                        <p class="bto-card-text">
+                            Crea grupos, abre sesiones de clase y revisa reportes de asistencia.
+                        </p>
+                        <div class="card-footer-bto">
+                            <a asp-controller="Grupos" asp-action="ListarGrupos" class="btn-bto-pill">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (User.IsInRole("Profesor"))
+    {
+        <div class="row justify-content-center g-4 mt-4">
+            <div class="col-lg-6">
+                <div class="bto-card bto-card-blue" style="height: 340px;">
+                    <i class="bi bi-clipboard2-check-fill bto-card-icon-bg"></i>
+                    <div class="bto-card-content">
+                        <h2 class="bto-card-title">Mis Grupos</h2>
+                        <p class="bto-card-text">
+                            Consulta tus grupos asignados, abre sesiones de clase y toma asistencia.
+                        </p>
+                        <div class="card-footer-bto">
+                            <a asp-controller="Grupos" asp-action="ListarGrupos" class="btn-bto-pill">Ver mis grupos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-6">
+                <div class="bto-card bto-card-teal" style="height: 340px;">
+                    <i class="bi bi-mortarboard-fill bto-card-icon-bg"></i>
+                    <div class="bto-card-content">
+                        <h2 class="bto-card-title">Mi<br>Asistencia</h2>
+                        <p class="bto-card-text">
+                            Revisa el historial completo de tus clases y tu porcentaje de asistencia.
+                        </p>
+                        <div class="card-footer-bto">
+                            <a asp-controller="Home" asp-action="MisAsistencias" class="btn-bto-pill">Ver mi asistencia</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

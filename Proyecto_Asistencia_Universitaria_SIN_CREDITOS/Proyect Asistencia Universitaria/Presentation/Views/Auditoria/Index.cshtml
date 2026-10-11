@@ -1,0 +1,102 @@
+@model IEnumerable<Aplication.DTos.AuditoriaDto>
+@{
+    ViewData["Title"] = "Auditoría";
+    string accionActual = ViewBag.AccionActual ?? "";
+    int sesionesActivas = ViewBag.SesionesActivas ?? 0;
+
+    var filtros = new (string Valor, string Etiqueta, string Icono)[]
+    {
+        ("", "Todos", "bi-list-ul"),
+        ("LOGIN", "Inicios de sesión", "bi-box-arrow-in-right"),
+        ("LOGOUT", "Cierres de sesión", "bi-box-arrow-left"),
+        ("INSERTAR", "Insertar", "bi-plus-circle"),
+        ("EDITAR", "Editar", "bi-pencil"),
+        ("ACTIVAR", "Activar", "bi-person-check"),
+        ("DESACTIVAR", "Desactivar", "bi-person-dash"),
+        ("ELIMINAR", "Eliminar", "bi-trash"),
+    };
+}
+
+<div class="container-fluid py-4 uni-animate-in" style="max-width: 1200px;">
+    <div class="text-center mb-4">
+        <h1 class="bto-heading" style="font-size: 2.4rem;">Auditoría del Sistema<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Registro de acciones ejecutadas por administradores, profesores y estudiantes</p>
+    </div>
+
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-4">
+            <div class="border rounded-4 p-4 text-center" style="background-color: var(--uni-surface); box-shadow: var(--uni-shadow);">
+                <i class="bi bi-people-fill text-accent" style="font-size: 2rem;"></i>
+                <h2 class="fw-bold mt-2 mb-0">@sesionesActivas</h2>
+                <p class="text-muted mb-0">Sesiones activas ahora mismo</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+        @foreach (var f in filtros)
+        {
+            var activo = accionActual == f.Valor;
+            <a asp-action="Index" asp-route-accion="@f.Valor"
+               class="btn btn-sm rounded-pill px-3 @(activo ? "btn-bto-primary" : "btn-outline-light")">
+                <i class="bi @f.Icono me-1"></i>@f.Etiqueta
+            </a>
+        }
+    </div>
+
+    <div class="table-custom">
+        <table class="table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Fecha y hora</th>
+                    <th>Correo</th>
+                    <th class="text-center">Acción</th>
+                    <th>Módulo</th>
+                    <th>Procedimiento</th>
+                    <th>Detalle</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var r in Model)
+                    {
+                        var (colorClase, icono) = r.Accion switch
+                        {
+                            "LOGIN" => ("bg-success", "bi-box-arrow-in-right"),
+                            "LOGOUT" => ("bg-secondary", "bi-box-arrow-left"),
+                            "INSERTAR" => ("uni-badge-primary text-dark", "bi-plus-circle"),
+                            "EDITAR" => ("bg-warning text-dark", "bi-pencil"),
+                            "ACTIVAR" => ("bg-success", "bi-person-check"),
+                            "DESACTIVAR" => ("bg-danger", "bi-person-dash"),
+                            "ELIMINAR" => ("bg-danger", "bi-trash"),
+                            _ => ("bg-secondary", "bi-question-circle")
+                        };
+                        <tr>
+                            <td class="text-nowrap">@r.FechaHora.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td class="fw-semibold">@r.Email</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill @colorClase px-3 py-2">
+                                    <i class="bi @icono me-1"></i>@r.Accion
+                                </span>
+                            </td>
+                            <td>@r.Modulo</td>
+                            <td><code class="small">@(r.Procedimiento ?? "-")</code></td>
+                            <td class="text-muted small">@(r.Detalle ?? "-")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-clipboard-x display-6 d-block mb-2 opacity-50"></i>
+                            No hay registros de auditoría @(string.IsNullOrEmpty(accionActual) ? "" : "para este filtro") todavía.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="text-muted small text-center mt-3">Se muestran los últimos 1000 registros, más recientes primero.</p>
+</div>

@@ -1,0 +1,62 @@
+@model IEnumerable<Aplication.DTos.CarreraDto>
+@{
+    ViewData["Title"] = "Listado de Carreras";
+}
+
+<div class="container py-5 uni-animate-in" style="max-width: 1000px;">
+    <div class="text-center mb-5">
+        <h1 class="bto-heading" style="font-size: 2.6rem;">Carreras Académicas<span class="text-accent">.</span></h1>
+        <p class="fs-5 text-muted">Oferta educativa y facultades de la universidad</p>
+        <a asp-action="NuevaCarrera" class="btn btn-bto-primary mt-3">
+            <i class="bi bi-plus-circle me-2"></i> Registrar Nueva Carrera
+        </a>
+    </div>
+
+    <div class="table-custom">
+        <table class="table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th class="ps-4" style="width: 100px;">ID</th>
+                    <th>Nombre de la Carrera</th>
+                    <th>Facultad a la que pertenece</th>
+                    <th class="text-center pe-4" style="width: 200px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 text-accent fw-bold">#@item.IdCarrera</td>
+                            <td class="fw-semibold">@item.NombreCarrera</td>
+                            <td>
+                                <span class="badge rounded-pill uni-badge-primary">
+                                    <i class="bi bi-building me-1"></i> @item.NombreFacultad
+                                </span>
+                            </td>
+                            <td class="text-center pe-4">
+                                <a asp-action="EditarCarrera" asp-route-id="@item.IdCarrera" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="EliminarCarrera" asp-route-id="@item.IdCarrera" method="post" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta carrera?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            <h5 class="fw-light">No hay carreras registradas actualmente.</h5>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
