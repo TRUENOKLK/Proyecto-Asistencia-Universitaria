@@ -9,7 +9,7 @@ namespace Aplication.DTos
     {
         public int IdAsignatura { get; set; }
 
-        [Required(ErrorMessage = "El código es obligatorio")]
+        [Required(ErrorMessage = "El código es obligatorio papoi")]
         [StringLength(20)]
         public string? Codigo { get; set; }
 
